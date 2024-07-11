@@ -46,6 +46,7 @@ class ActorCritic:
     def update(self,transition_dict):
         states = torch.tensor(transition_dict['states'], dtype=torch.float).to(self.device)
         actions = torch.tensor(transition_dict['actions'], dtype=torch.float).view(-1,1).to(self.device)
+        actions = torch.scalar_tensor(int,dtype=torch.float,)
         rewards = torch.tensor(transition_dict['rewards'], dtype=torch.float).view(-1,1).to(self.device)
         next_states = torch.tensor(transition_dict['next_states'], dtype=torch.float).to(self.device)
         dones = torch.tensor(transition_dict['dones'], dtype=torch.float).view(-1,1).to(self.device)
