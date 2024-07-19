@@ -48,6 +48,24 @@ class TRPO:
         action = action_dist.sample()
         return action.item()
 
+    def hessian_matrix_vector_product(self, states, old_action_dists, vector):
+        #计算黑塞矩阵和一个向量的乘积
+        new_action_dists = torch.distributions.Categorical(self.actor(states))
+        kl = torch.mean(
+            torch.distributions.kl.kl_divergence(old_action_dists, new_action_dists)
+        )
+        kl_grad = torch.autograd.grad(kl, self.actor.parameters(), create_graph=True)
+        kl_grad_vector = torch.cat([grad.view(-1) for grad in kl_grad])
+        #将kl的距离先和向量进行点积运算
+        kl_grad_vector_product = torch.dot(kl_grad_vector, vector)
+        grad2 = torch.autograd.grad(kl_grad_vector_product, self.actor.parameters())
+        grad2_vector = torch.cat([grad.view(-1) for grad in grad2])
+        return grad2_vector
+
+    def conjugate_gradient(self, grad, states, old_action_dists):  #共轭梯度法求解方程
+        x = torch.zeros_like(grad)
+
+
 
 
 
